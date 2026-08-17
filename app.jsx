@@ -213,70 +213,93 @@ function Hero() {
   useEffect(() => {
     if (typeof gsap === "undefined") return;
     const ctx = gsap.context(() => {
-      gsap.from(".hero-anim", {
-        y: 28,
-        opacity: 0,
-        duration: 0.9,
-        ease: "power3.out",
-        stagger: 0.12,
-        delay: 0.15,
-      });
+      gsap.set(".hero-word", { yPercent: 110 });
+      gsap.set(".hero-anim", { opacity: 0, y: 20 });
+      const tl = gsap.timeline({ delay: 0.1 });
+      tl.to(".hero-word", { yPercent: 0, duration: 1.1, ease: "power4.out", stagger: 0.07 }).to(
+        ".hero-anim",
+        { opacity: 1, y: 0, duration: 0.8, ease: "power3.out", stagger: 0.12 },
+        "-=0.5"
+      );
+      // Slow parallax drift on the background photo as you scroll past the hero.
+      if (typeof ScrollTrigger !== "undefined") {
+        gsap.registerPlugin(ScrollTrigger);
+        gsap.to(".hero-photo", {
+          yPercent: 18,
+          ease: "none",
+          scrollTrigger: { trigger: heroRef.current, start: "top top", end: "bottom top", scrub: true },
+        });
+      }
     }, heroRef);
     return () => ctx.revert();
   }, []);
 
+  const words = ["TU NEGOCIO", "NO TIENE", "SEÑAL."];
+
   return (
-    <section ref={heroRef} className="hero-bg bg-brand-dark relative min-h-screen flex items-center pt-28 pb-20 px-6 lg:px-16 overflow-hidden">
-      <div className={`${WRAP} mx-auto w-full grid lg:grid-cols-[1.05fr_0.95fr] gap-16 items-center relative z-10`}>
-        <div>
-          <div className="hero-anim inline-flex items-center gap-2 bg-brand-blue/10 text-brand-blue font-body font-semibold text-sm px-4 py-1.5 rounded-full mb-8">
-            <span className="w-2 h-2 bg-brand-blue rounded-full animate-pulse"></span>
-            Ads + Diseño Web en Olavarría
-          </div>
-          <h1 className="hero-anim font-heading font-extrabold text-white leading-[0.95] mb-8" style={{ fontSize: "clamp(2.75rem, 6vw, 6.5rem)", letterSpacing: "-0.03em" }}>
-            Tu negocio
-            <br />
-            no tiene
-            <br />
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-brand-blue via-sky-300 to-brand-orange">señal.</span>
-          </h1>
-          <p className="hero-anim font-body text-brand-muted leading-relaxed mb-10 max-w-xl" style={{ fontSize: "clamp(1.05rem, 1.3vw, 1.35rem)" }}>
-            Campañas de Google y Meta Ads que traen clientes, y sitios web que los convierten. Sin jerga de agencia, sin reportes eternos — resultados que se ven en tu WhatsApp.
-          </p>
-          <div className="hero-anim flex flex-col sm:flex-row gap-4">
-            <a
-              href={waLink("Hola, me gustaría consultar sobre sus servicios.")}
-              target="_blank"
-              rel="noopener"
-              className="inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1ebe5a] text-white font-body font-semibold px-8 py-4 rounded-full transition-all active:scale-95 text-base shadow-lg shadow-[#25D36633]"
-            >
-              <WhatsAppIcon className="w-5 h-5" />
-              Escribinos por WhatsApp
-            </a>
-            <a href="#servicios" className="inline-flex items-center justify-center gap-2 border border-white/20 hover:border-brand-blue hover:bg-brand-blue/10 text-white font-body font-semibold px-8 py-4 rounded-full transition-all active:scale-95 text-base">
-              Ver servicios
-              <ArrowIcon className="w-4 h-4" />
-            </a>
-          </div>
-          <div className="hero-anim flex items-center gap-10 mt-14 pt-10 border-t border-white/10">
-            {[
-              ["6", "Clientes activos"],
-              ["3 años", "En Olavarría"],
-              ["100%", "Local"],
-            ].map(([n, label]) => (
-              <div key={label}>
-                <div className="font-heading font-bold text-3xl text-white">{n}</div>
-                <div className="font-body text-brand-muted text-sm mt-1">{label}</div>
-              </div>
-            ))}
-          </div>
+    <section ref={heroRef} className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden px-6">
+      <div className="hero-photo absolute inset-0 -top-[10%] h-[120%]">
+        <img src="assets/hero/laguna-olavarria.jpg" alt="Laguna de Olavarría" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-brand-dark/70"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/40 to-brand-dark/70"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-brand-dark/60 via-transparent to-brand-dark/60"></div>
+      </div>
+
+      <div className="relative z-10 flex flex-col items-center text-center pt-24">
+        <div className="hero-anim inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white font-body font-semibold text-sm px-4 py-1.5 rounded-full mb-10 border border-white/15">
+          <span className="w-2 h-2 bg-brand-orange rounded-full animate-pulse"></span>
+          Ads + Diseño Web en Olavarría
         </div>
-        <div className="relative h-[420px] lg:h-[560px] flex items-center justify-center">
-          <ThreeScene />
+
+        <h1
+          className="font-display text-white uppercase mx-auto"
+          style={{ fontSize: "clamp(3.2rem, 10vw, 9.5rem)", lineHeight: 0.86, letterSpacing: "-0.01em", maxWidth: "1200px" }}
+        >
+          {words.map((line, i) => (
+            <span key={i} className="block overflow-hidden">
+              <span className="hero-word inline-block">
+                {i === 2 ? <span className="bg-clip-text text-transparent bg-gradient-to-r from-brand-blue via-sky-300 to-brand-orange">{line}</span> : line}
+              </span>
+            </span>
+          ))}
+        </h1>
+
+        <p className="hero-anim font-body text-white/75 leading-relaxed mt-10 max-w-xl" style={{ fontSize: "clamp(1.05rem, 1.3vw, 1.35rem)" }}>
+          <span className="text-white font-semibold">Nosotros se la damos.</span> Campañas de Google y Meta Ads que traen clientes, y sitios web que los convierten. Sin jerga de agencia, sin reportes eternos — resultados que se ven en tu WhatsApp.
+        </p>
+
+        <div className="hero-anim flex flex-col sm:flex-row gap-4 mt-10">
+          <a
+            href={waLink("Hola, me gustaría consultar sobre sus servicios.")}
+            target="_blank"
+            rel="noopener"
+            className="inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1ebe5a] text-white font-body font-semibold px-8 py-4 rounded-full transition-all active:scale-95 text-base shadow-lg shadow-[#25D36633]"
+          >
+            <WhatsAppIcon className="w-5 h-5" />
+            Escribinos por WhatsApp
+          </a>
+          <a href="#servicios" className="inline-flex items-center justify-center gap-2 border border-white/25 hover:border-brand-blue hover:bg-white/10 text-white font-body font-semibold px-8 py-4 rounded-full transition-all active:scale-95 text-base">
+            Ver servicios
+            <ArrowIcon className="w-4 h-4" />
+          </a>
+        </div>
+
+        <div className="hero-anim flex items-center gap-10 sm:gap-14 mt-16 pt-10 border-t border-white/20">
+          {[
+            ["6", "Clientes activos"],
+            ["3 años", "En Olavarría"],
+            ["100%", "Local"],
+          ].map(([n, label]) => (
+            <div key={label}>
+              <div className="font-heading font-bold text-3xl text-white">{n}</div>
+              <div className="font-body text-white/60 text-sm mt-1">{label}</div>
+            </div>
+          ))}
         </div>
       </div>
+
       <div className="absolute inset-x-0 bottom-8 flex justify-center z-10">
-        <div className="flex flex-col items-center gap-2 text-white/40 animate-bounce">
+        <div className="flex flex-col items-center gap-2 text-white/50 animate-bounce">
           <span className="font-body text-xs tracking-widest uppercase">Scroll</span>
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />

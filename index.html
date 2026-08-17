@@ -38,8 +38,11 @@
   }
   </script>
 
-  <!-- Fonts (vendorized Inter, no external CDN) -->
+  <!-- Fonts (vendorized Inter, no external CDN) + display headline font for the big hero type -->
   <link rel="stylesheet" href="assets/css/fonts.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet"/>
 
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -60,6 +63,7 @@
           fontFamily: {
             heading: ['Inter', 'sans-serif'],
             body:    ['Inter', 'sans-serif'],
+            display: ['Anton', 'Inter', 'sans-serif'],
           }
         }
       }

@@ -1,5 +1,9 @@
 const { useState, useEffect, useRef } = React;
 
+// Wider desktop canvas — mirrors max-w-6xl on mobile/tablet but stretches out on real desktops
+// instead of staying pinned to a narrow phone-width column.
+const WRAP = "max-w-[1400px]";
+
 const WA_NUMBER = "5491162310105";
 function waLink(text) {
   return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(text)}`;
@@ -70,7 +74,7 @@ function Nav() {
   ];
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-4 px-6 lg:px-16 ${scrolled ? "nav-scrolled" : ""}`}>
-      <div className="max-w-6xl mx-auto flex items-center justify-between">
+      <div className="max-w-[1400px] mx-auto flex items-center justify-between">
         <a href="#" className="flex-shrink-0">
           <img src="assets/logo-white.svg" alt="Carmi Ads" className="h-9 w-auto" />
         </a>
@@ -106,82 +110,176 @@ function Nav() {
   );
 }
 
+function ThreeScene() {
+  const mountRef = useRef(null);
+  useEffect(() => {
+    const mount = mountRef.current;
+    if (!mount || typeof THREE === "undefined") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let width = mount.clientWidth,
+      height = mount.clientHeight;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+    camera.position.z = 7;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    mount.appendChild(renderer.domElement);
+
+    const group = new THREE.Group();
+    scene.add(group);
+
+    // Layered wireframe icosahedra — the "brand mark" made physical.
+    const shells = [
+      { r: 2.6, color: 0x0ea5e9, opacity: 0.9, speed: 0.0022 },
+      { r: 1.7, color: 0xf97316, opacity: 0.55, speed: -0.0032 },
+      { r: 0.95, color: 0xffffff, opacity: 0.35, speed: 0.0045 },
+    ];
+    const meshes = shells.map(({ r, color, opacity }) => {
+      const geo = new THREE.IcosahedronGeometry(r, 1);
+      const mat = new THREE.MeshBasicMaterial({ color, wireframe: true, transparent: true, opacity });
+      const mesh = new THREE.Mesh(geo, mat);
+      group.add(mesh);
+      return mesh;
+    });
+
+    // Particle field drifting around the shells.
+    const particleCount = 220;
+    const positions = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount; i++) {
+      const radius = 4 + Math.random() * 4;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(Math.random() * 2 - 1);
+      positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+      positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+      positions[i * 3 + 2] = radius * Math.cos(phi);
+    }
+    const particleGeo = new THREE.BufferGeometry();
+    particleGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    const particleMat = new THREE.PointsMaterial({ color: 0x0ea5e9, size: 0.035, transparent: true, opacity: 0.55 });
+    const particles = new THREE.Points(particleGeo, particleMat);
+    scene.add(particles);
+
+    let targetX = 0,
+      targetY = 0;
+    function onMove(e) {
+      const rect = mount.getBoundingClientRect();
+      const cx = e.touches ? e.touches[0].clientX : e.clientX;
+      const cy = e.touches ? e.touches[0].clientY : e.clientY;
+      targetX = ((cx - rect.left) / rect.width - 0.5) * 0.9;
+      targetY = ((cy - rect.top) / rect.height - 0.5) * 0.9;
+    }
+    mount.addEventListener("mousemove", onMove);
+
+    let raf;
+    function animate() {
+      raf = requestAnimationFrame(animate);
+      meshes.forEach((m, i) => {
+        m.rotation.y += shells[i].speed;
+        m.rotation.x += shells[i].speed * 0.6;
+      });
+      particles.rotation.y += 0.0006;
+      group.rotation.y += (targetX - group.rotation.y) * 0.03;
+      group.rotation.x += (-targetY - group.rotation.x) * 0.03;
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    function onResize() {
+      width = mount.clientWidth;
+      height = mount.clientHeight;
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height);
+    }
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", onResize);
+      mount.removeEventListener("mousemove", onMove);
+      renderer.dispose();
+      if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement);
+    };
+  }, []);
+
+  return <div ref={mountRef} className="absolute inset-0" aria-hidden="true" />;
+}
+
 function Hero() {
+  const heroRef = useRef(null);
+  useEffect(() => {
+    if (typeof gsap === "undefined") return;
+    const ctx = gsap.context(() => {
+      gsap.from(".hero-anim", {
+        y: 28,
+        opacity: 0,
+        duration: 0.9,
+        ease: "power3.out",
+        stagger: 0.12,
+        delay: 0.15,
+      });
+    }, heroRef);
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section className="hero-bg bg-brand-dark min-h-screen flex items-center pt-20 pb-16 px-6 lg:px-16">
-      <div className="max-w-6xl mx-auto w-full grid md:grid-cols-2 gap-12 items-center">
-        <div className="order-2 md:order-1">
-          <div className="inline-flex items-center gap-2 bg-brand-blue/10 text-brand-blue font-body font-semibold text-sm px-4 py-1.5 rounded-full mb-6">
+    <section ref={heroRef} className="hero-bg bg-brand-dark relative min-h-screen flex items-center pt-28 pb-20 px-6 lg:px-16 overflow-hidden">
+      <div className={`${WRAP} mx-auto w-full grid lg:grid-cols-[1.05fr_0.95fr] gap-16 items-center relative z-10`}>
+        <div>
+          <div className="hero-anim inline-flex items-center gap-2 bg-brand-blue/10 text-brand-blue font-body font-semibold text-sm px-4 py-1.5 rounded-full mb-8">
             <span className="w-2 h-2 bg-brand-blue rounded-full animate-pulse"></span>
             Ads + Diseño Web en Olavarría
           </div>
-          <h1 className="font-heading font-extrabold text-4xl lg:text-5xl xl:text-6xl text-white leading-tight mb-6">
-            Tu negocio no tiene señal.
+          <h1 className="hero-anim font-heading font-extrabold text-white leading-[0.95] mb-8" style={{ fontSize: "clamp(2.75rem, 6vw, 6.5rem)", letterSpacing: "-0.03em" }}>
+            Tu negocio
             <br />
-            <span className="text-brand-blue">Nosotros se la damos.</span>
+            no tiene
+            <br />
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-brand-blue via-sky-300 to-brand-orange">señal.</span>
           </h1>
-          <p className="font-body text-brand-muted text-lg leading-relaxed mb-8 max-w-lg">
+          <p className="hero-anim font-body text-brand-muted leading-relaxed mb-10 max-w-xl" style={{ fontSize: "clamp(1.05rem, 1.3vw, 1.35rem)" }}>
             Campañas de Google y Meta Ads que traen clientes, y sitios web que los convierten. Sin jerga de agencia, sin reportes eternos — resultados que se ven en tu WhatsApp.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="hero-anim flex flex-col sm:flex-row gap-4">
             <a
               href={waLink("Hola, me gustaría consultar sobre sus servicios.")}
               target="_blank"
               rel="noopener"
-              className="inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1ebe5a] text-white font-body font-semibold px-7 py-3.5 rounded-full transition-all active:scale-95 text-base"
+              className="inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1ebe5a] text-white font-body font-semibold px-8 py-4 rounded-full transition-all active:scale-95 text-base shadow-lg shadow-[#25D36633]"
             >
               <WhatsAppIcon className="w-5 h-5" />
               Escribinos por WhatsApp
             </a>
-            <a href="#servicios" className="inline-flex items-center justify-center gap-2 border border-white/20 hover:border-brand-blue hover:bg-brand-blue/10 text-white font-body font-semibold px-7 py-3.5 rounded-full transition-all active:scale-95 text-base">
+            <a href="#servicios" className="inline-flex items-center justify-center gap-2 border border-white/20 hover:border-brand-blue hover:bg-brand-blue/10 text-white font-body font-semibold px-8 py-4 rounded-full transition-all active:scale-95 text-base">
               Ver servicios
               <ArrowIcon className="w-4 h-4" />
             </a>
           </div>
-          <div className="flex items-center gap-8 mt-10 pt-8 border-t border-white/10">
-            <div>
-              <div className="font-heading font-bold text-2xl text-white">6</div>
-              <div className="font-body text-brand-muted text-sm">Clientes activos</div>
-            </div>
-            <div className="w-px h-10 bg-white/10"></div>
-            <div>
-              <div className="font-heading font-bold text-2xl text-white">3 años</div>
-              <div className="font-body text-brand-muted text-sm">En Olavarría</div>
-            </div>
-            <div className="w-px h-10 bg-white/10"></div>
-            <div>
-              <div className="font-heading font-bold text-2xl text-white">100%</div>
-              <div className="font-body text-brand-muted text-sm">Local</div>
-            </div>
+          <div className="hero-anim flex items-center gap-10 mt-14 pt-10 border-t border-white/10">
+            {[
+              ["6", "Clientes activos"],
+              ["3 años", "En Olavarría"],
+              ["100%", "Local"],
+            ].map(([n, label]) => (
+              <div key={label}>
+                <div className="font-heading font-bold text-3xl text-white">{n}</div>
+                <div className="font-body text-brand-muted text-sm mt-1">{label}</div>
+              </div>
+            ))}
           </div>
         </div>
-        <div className="order-1 md:order-2 flex justify-center">
-          <svg viewBox="0 0 480 400" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full max-w-lg">
-            <circle cx="240" cy="200" r="160" fill="#0EA5E9" opacity="0.06" />
-            <circle cx="240" cy="200" r="110" fill="#0EA5E9" opacity="0.06" />
-            <rect x="170" y="80" width="140" height="240" rx="20" fill="white" stroke="#0EA5E9" strokeWidth="3" />
-            <rect x="185" y="100" width="110" height="180" rx="4" fill="#F0F9FF" />
-            <rect x="195" y="115" width="90" height="10" rx="5" fill="#0EA5E9" opacity="0.3" />
-            <rect x="195" y="133" width="65" height="8" rx="4" fill="#475569" opacity="0.25" />
-            <rect x="195" y="150" width="90" height="45" rx="8" fill="#0EA5E9" opacity="0.12" />
-            <rect x="195" y="204" width="42" height="42" rx="8" fill="#F97316" opacity="0.15" />
-            <rect x="243" y="204" width="42" height="42" rx="8" fill="#0EA5E9" opacity="0.15" />
-            <rect x="195" y="252" width="90" height="8" rx="4" fill="#475569" opacity="0.2" />
-            <rect x="215" y="300" width="50" height="4" rx="2" fill="#475569" opacity="0.3" />
-            <g transform="translate(60, 120)">
-              <rect width="110" height="44" rx="12" fill="white" />
-              <circle cx="22" cy="22" r="14" fill="#0EA5E9" opacity="0.15" />
-              <text x="22" y="27" textAnchor="middle" fontSize="14">📈</text>
-              <rect x="44" y="14" width="52" height="7" rx="3.5" fill="#0F172A" opacity="0.15" />
-              <rect x="44" y="26" width="36" height="6" rx="3" fill="#0EA5E9" opacity="0.25" />
-            </g>
-            <g transform="translate(310, 230)">
-              <rect width="110" height="44" rx="12" fill="white" />
-              <circle cx="22" cy="22" r="14" fill="#F97316" opacity="0.15" />
-              <text x="22" y="27" textAnchor="middle" fontSize="14">⭐</text>
-              <rect x="44" y="14" width="52" height="7" rx="3.5" fill="#0F172A" opacity="0.15" />
-              <rect x="44" y="26" width="40" height="6" rx="3" fill="#F97316" opacity="0.25" />
-            </g>
+        <div className="relative h-[420px] lg:h-[560px] flex items-center justify-center">
+          <ThreeScene />
+        </div>
+      </div>
+      <div className="absolute inset-x-0 bottom-8 flex justify-center z-10">
+        <div className="flex flex-col items-center gap-2 text-white/40 animate-bounce">
+          <span className="font-body text-xs tracking-widest uppercase">Scroll</span>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
           </svg>
         </div>
       </div>
@@ -189,13 +287,28 @@ function Hero() {
   );
 }
 
+function Marquee() {
+  const items = [...CLIENTS, ...CLIENTS];
+  return (
+    <div className="bg-brand-base-alt border-y border-white/10 py-6 overflow-hidden">
+      <div className="marquee-track flex items-center gap-16 w-max">
+        {items.map((c, i) => (
+          <span key={i} className="font-heading font-bold text-xl text-white/25 hover:text-white/60 transition-colors whitespace-nowrap tracking-tight">
+            {c.name}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function Servicios() {
   return (
-    <section id="servicios" className="py-20 px-6 lg:px-16 bg-brand-base-alt">
-      <div className="max-w-6xl mx-auto">
+    <section id="servicios" className="py-24 lg:py-36 px-6 lg:px-16 bg-brand-base-alt">
+      <div className="max-w-[1400px] mx-auto">
         <div className="text-center mb-14 reveal">
           <span className="font-body font-semibold text-brand-blue text-sm uppercase tracking-widest">Lo que hacemos</span>
-          <h2 className="font-heading font-extrabold text-3xl lg:text-4xl text-white mt-3 mb-4">
+          <h2 className="font-heading font-extrabold text-4xl lg:text-6xl text-white mt-3 mb-4">
             Dos cosas.
             <br />
             Bien hechas.
@@ -204,25 +317,25 @@ function Servicios() {
             Nada de paquetes de diez servicios que no necesitás. Ads que traen gente y un sitio que los convierte — eso alcanza para crecer online.
           </p>
         </div>
-        <div className="grid sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
-          <div className="service-card reveal bg-brand-panel rounded-2xl p-7 border border-white/10">
-            <div className="w-12 h-12 bg-brand-blue/10 rounded-xl flex items-center justify-center mb-5">
-              <svg className="w-6 h-6 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="grid sm:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          <div className="service-card reveal bg-brand-panel rounded-3xl p-10 border border-white/10">
+            <div className="w-16 h-16 bg-brand-blue/10 rounded-2xl flex items-center justify-center mb-7">
+              <svg className="w-8 h-8 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
               </svg>
             </div>
-            <h3 className="font-heading font-bold text-lg text-white mb-2">Ads Pagados</h3>
-            <p className="font-body text-brand-muted text-sm leading-relaxed">Campañas de Google y Meta Ads armadas para negocios locales. Pagás por clic, no por promesas — vemos el gasto juntos cada semana.</p>
+            <h3 className="font-heading font-bold text-2xl text-white mb-3">Ads Pagados</h3>
+            <p className="font-body text-brand-muted text-base leading-relaxed">Campañas de Google y Meta Ads armadas para negocios locales. Pagás por clic, no por promesas — vemos el gasto juntos cada semana.</p>
           </div>
-          <div className="service-card reveal bg-brand-panel rounded-2xl p-7 border border-white/10">
-            <div className="w-12 h-12 bg-brand-blue/10 rounded-xl flex items-center justify-center mb-5">
-              <svg className="w-6 h-6 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="service-card reveal bg-brand-panel rounded-3xl p-10 border border-white/10">
+            <div className="w-16 h-16 bg-brand-blue/10 rounded-2xl flex items-center justify-center mb-7">
+              <svg className="w-8 h-8 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </div>
-            <h3 className="font-heading font-bold text-lg text-white mb-2">Diseño Web</h3>
-            <p className="font-body text-brand-muted text-sm leading-relaxed">Sitios rápidos y mobile-first, hechos para vender. Tu sitio es el primer vendedor que ve un cliente — que no lo espante.</p>
+            <h3 className="font-heading font-bold text-2xl text-white mb-3">Diseño Web</h3>
+            <p className="font-body text-brand-muted text-base leading-relaxed">Sitios rápidos y mobile-first, hechos para vender. Tu sitio es el primer vendedor que ve un cliente — que no lo espante.</p>
           </div>
         </div>
         <div className="mt-12 text-center">
@@ -243,7 +356,7 @@ function ClientLogo({ client }) {
       <img
         src={client.logoUrl}
         alt={client.name}
-        className="w-14 h-14 rounded-xl object-cover"
+        className="w-16 h-16 rounded-2xl object-cover"
         onError={() => setFailed(true)}
       />
     );
@@ -256,7 +369,7 @@ function ClientLogo({ client }) {
     .toUpperCase();
   return (
     <div
-      className="client-logo-fallback w-14 h-14 rounded-xl text-lg"
+      className="client-logo-fallback w-16 h-16 rounded-2xl text-xl"
       style={{ background: `${client.accent}22`, color: client.accent, border: `1px solid ${client.accent}44` }}
     >
       {initials}
@@ -266,11 +379,11 @@ function ClientLogo({ client }) {
 
 function Clientes() {
   return (
-    <section id="clientes" className="py-20 px-6 lg:px-16 bg-brand-dark">
-      <div className="max-w-6xl mx-auto">
+    <section id="clientes" className="py-24 lg:py-36 px-6 lg:px-16 bg-brand-dark">
+      <div className="max-w-[1400px] mx-auto">
         <div className="text-center mb-14 reveal">
           <span className="font-body font-semibold text-brand-blue text-sm uppercase tracking-widest">Nuestros clientes</span>
-          <h2 className="font-heading font-extrabold text-3xl lg:text-4xl text-white mt-3 mb-4">
+          <h2 className="font-heading font-extrabold text-4xl lg:text-6xl text-white mt-3 mb-4">
             Negocios reales de Olavarría
             <br />
             que ya trabajan con nosotros
@@ -284,7 +397,7 @@ function Clientes() {
               href={client.igUrl}
               target="_blank"
               rel="noopener"
-              className="client-card reveal bg-brand-panel rounded-2xl p-6 border border-white/10 flex flex-col gap-4"
+              className="client-card reveal bg-brand-panel rounded-3xl p-8 border border-white/10 flex flex-col gap-5"
             >
               <div className="flex items-center gap-4">
                 <ClientLogo client={client} />
@@ -328,11 +441,11 @@ function ComoTrabajamos() {
     ["04", "Reportes claros", "Cada mes recibís un informe simple que muestra exactamente qué logramos juntos."],
   ];
   return (
-    <section className="py-20 px-6 lg:px-16 bg-brand-base-alt">
-      <div className="max-w-5xl mx-auto">
+    <section className="py-24 lg:py-36 px-6 lg:px-16 bg-brand-base-alt">
+      <div className="max-w-[1250px] mx-auto">
         <div className="text-center mb-14 reveal">
           <span className="font-body font-semibold text-brand-blue text-sm uppercase tracking-widest">Cómo trabajamos</span>
-          <h2 className="font-heading font-extrabold text-3xl lg:text-4xl text-white mt-3 mb-4">Simple, transparente, efectivo</h2>
+          <h2 className="font-heading font-extrabold text-4xl lg:text-6xl text-white mt-3 mb-4">Simple, transparente, efectivo</h2>
           <p className="font-body text-brand-muted text-lg max-w-xl mx-auto">Sin contratos eternos ni lenguaje técnico. Un proceso claro de cuatro pasos para que veas resultados desde el primer mes.</p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
@@ -353,11 +466,11 @@ function ComoTrabajamos() {
 function Testimonios() {
   const withResults = CLIENTS.filter((c) => c.result);
   return (
-    <section id="testimonios" className="py-20 px-6 lg:px-16 bg-brand-dark">
-      <div className="max-w-6xl mx-auto">
+    <section id="testimonios" className="py-24 lg:py-36 px-6 lg:px-16 bg-brand-dark">
+      <div className="max-w-[1400px] mx-auto">
         <div className="text-center mb-14 reveal">
           <span className="font-body font-semibold text-brand-blue text-sm uppercase tracking-widest">Resultados</span>
-          <h2 className="font-heading font-extrabold text-3xl lg:text-4xl text-white mt-3 mb-4">
+          <h2 className="font-heading font-extrabold text-4xl lg:text-6xl text-white mt-3 mb-4">
             Negocios de Olavarría
             <br />
             que ya crecen con Carmi Ads
@@ -388,8 +501,8 @@ function Testimonios() {
 
 function Nosotros() {
   return (
-    <section id="nosotros" className="py-20 px-6 lg:px-16 bg-brand-base-alt">
-      <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-14 items-center">
+    <section id="nosotros" className="py-24 lg:py-36 px-6 lg:px-16 bg-brand-base-alt">
+      <div className="max-w-[1250px] mx-auto grid md:grid-cols-2 gap-14 items-center">
         <div className="flex flex-col items-center md:items-start gap-5">
           <div className="relative">
             <div className="w-56 h-56 rounded-3xl overflow-hidden border-4 border-brand-blue/15 shadow-xl">
@@ -407,7 +520,7 @@ function Nosotros() {
         </div>
         <div>
           <span className="font-body font-semibold text-brand-blue text-sm uppercase tracking-widest">Sobre nosotros</span>
-          <h2 className="font-heading font-extrabold text-3xl lg:text-4xl text-white mt-3 mb-6">
+          <h2 className="font-heading font-extrabold text-4xl lg:text-6xl text-white mt-3 mb-6">
             Marketing digital
             <br />
             hecho por alguien
@@ -466,11 +579,11 @@ function Contacto() {
   }
 
   return (
-    <section id="contacto" className="py-20 px-6 lg:px-16 bg-brand-dark">
-      <div className="max-w-6xl mx-auto">
+    <section id="contacto" className="py-24 lg:py-36 px-6 lg:px-16 bg-brand-dark">
+      <div className="max-w-[1400px] mx-auto">
         <div className="text-center mb-14 reveal">
           <span className="font-body font-semibold text-brand-blue text-sm uppercase tracking-widest">Contacto</span>
-          <h2 className="font-heading font-extrabold text-3xl lg:text-4xl text-white mt-3 mb-4">Hablamos?</h2>
+          <h2 className="font-heading font-extrabold text-4xl lg:text-6xl text-white mt-3 mb-4">Hablamos?</h2>
           <p className="font-body text-brand-muted text-lg max-w-xl mx-auto">El primer diagnóstico es gratis. Escribinos por WhatsApp y te decimos exactamente qué haríamos para hacer crecer tu negocio.</p>
         </div>
         <div className="grid md:grid-cols-2 gap-12 items-start">
@@ -548,7 +661,7 @@ function Contacto() {
 function Footer() {
   return (
     <footer className="bg-brand-base-alt text-white py-14 px-6 lg:px-16">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-[1400px] mx-auto">
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10 mb-12">
           <div>
             <img src="assets/logo-white.svg" alt="Carmi Ads" className="h-10 w-auto mb-3" />
@@ -618,6 +731,7 @@ function App() {
     <>
       <Nav />
       <Hero />
+      <Marquee />
       <Servicios />
       <Clientes />
       <ComoTrabajamos />

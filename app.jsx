@@ -526,19 +526,19 @@ function Nosotros() {
   return (
     <section id="nosotros" className="py-24 lg:py-36 px-6 lg:px-16 bg-brand-base-alt">
       <div className="max-w-[1250px] mx-auto grid md:grid-cols-2 gap-14 items-center">
-        <div className="flex flex-col items-center md:items-start gap-5">
-          <div className="relative">
-            <div className="w-56 h-56 rounded-3xl overflow-hidden border-4 border-brand-blue/15 shadow-xl">
-              <img src="assets/guido.jpg" alt="Guido Carminatti" className="w-full h-full object-cover object-center" style={{ transform: "scale(1.28)", transformOrigin: "center center" }} loading="lazy" />
+        <div className="flex flex-col items-center md:items-start gap-6">
+          <div className="relative w-full max-w-md">
+            <div className="rounded-3xl overflow-hidden border border-white/10 shadow-2xl aspect-[3/4]">
+              <img src="assets/guido-desk.png" alt="Guido Carminatti, fundador de Carmi Ads" className="w-full h-full object-cover" />
             </div>
-            <div className="absolute -bottom-4 -right-4 bg-brand-blue text-white rounded-2xl px-4 py-2 shadow-lg">
-              <div className="font-heading font-bold text-sm leading-tight">Carmi Ads</div>
+            <div className="absolute -bottom-5 -right-5 bg-brand-blue text-white rounded-2xl px-5 py-3 shadow-lg">
+              <div className="font-heading font-bold text-base leading-tight">Carmi Ads</div>
               <div className="font-body text-blue-100 text-xs">Olavarría, BA</div>
             </div>
           </div>
           <div className="text-center md:text-left mt-2">
-            <div className="font-heading font-bold text-xl text-white">Guido Carminatti</div>
-            <div className="font-body text-brand-muted text-sm">Fundador & Director, Carmi Ads</div>
+            <div className="font-heading font-bold text-2xl text-white">Guido Carminatti</div>
+            <div className="font-body text-brand-muted text-base">Fundador & Director, Carmi Ads</div>
           </div>
         </div>
         <div>

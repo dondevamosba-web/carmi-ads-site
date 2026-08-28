@@ -110,104 +110,6 @@ function Nav() {
   );
 }
 
-function ThreeScene() {
-  const mountRef = useRef(null);
-  useEffect(() => {
-    const mount = mountRef.current;
-    if (!mount || typeof THREE === "undefined") return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    let width = mount.clientWidth,
-      height = mount.clientHeight;
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    camera.position.z = 7;
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    mount.appendChild(renderer.domElement);
-
-    const group = new THREE.Group();
-    scene.add(group);
-
-    // Layered wireframe icosahedra — the "brand mark" made physical.
-    const shells = [
-      { r: 2.6, color: 0x0ea5e9, opacity: 0.9, speed: 0.0022 },
-      { r: 1.7, color: 0xf97316, opacity: 0.55, speed: -0.0032 },
-      { r: 0.95, color: 0xffffff, opacity: 0.35, speed: 0.0045 },
-    ];
-    const meshes = shells.map(({ r, color, opacity }) => {
-      const geo = new THREE.IcosahedronGeometry(r, 1);
-      const mat = new THREE.MeshBasicMaterial({ color, wireframe: true, transparent: true, opacity });
-      const mesh = new THREE.Mesh(geo, mat);
-      group.add(mesh);
-      return mesh;
-    });
-
-    // Particle field drifting around the shells.
-    const particleCount = 220;
-    const positions = new Float32Array(particleCount * 3);
-    for (let i = 0; i < particleCount; i++) {
-      const radius = 4 + Math.random() * 4;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(Math.random() * 2 - 1);
-      positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
-      positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-      positions[i * 3 + 2] = radius * Math.cos(phi);
-    }
-    const particleGeo = new THREE.BufferGeometry();
-    particleGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-    const particleMat = new THREE.PointsMaterial({ color: 0x0ea5e9, size: 0.035, transparent: true, opacity: 0.55 });
-    const particles = new THREE.Points(particleGeo, particleMat);
-    scene.add(particles);
-
-    let targetX = 0,
-      targetY = 0;
-    function onMove(e) {
-      const rect = mount.getBoundingClientRect();
-      const cx = e.touches ? e.touches[0].clientX : e.clientX;
-      const cy = e.touches ? e.touches[0].clientY : e.clientY;
-      targetX = ((cx - rect.left) / rect.width - 0.5) * 0.9;
-      targetY = ((cy - rect.top) / rect.height - 0.5) * 0.9;
-    }
-    mount.addEventListener("mousemove", onMove);
-
-    let raf;
-    function animate() {
-      raf = requestAnimationFrame(animate);
-      meshes.forEach((m, i) => {
-        m.rotation.y += shells[i].speed;
-        m.rotation.x += shells[i].speed * 0.6;
-      });
-      particles.rotation.y += 0.0006;
-      group.rotation.y += (targetX - group.rotation.y) * 0.03;
-      group.rotation.x += (-targetY - group.rotation.x) * 0.03;
-      renderer.render(scene, camera);
-    }
-    animate();
-
-    function onResize() {
-      width = mount.clientWidth;
-      height = mount.clientHeight;
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-      renderer.setSize(width, height);
-    }
-    window.addEventListener("resize", onResize);
-
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", onResize);
-      mount.removeEventListener("mousemove", onMove);
-      renderer.dispose();
-      if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement);
-    };
-  }, []);
-
-  return <div ref={mountRef} className="absolute inset-0" aria-hidden="true" />;
-}
-
 function Hero() {
   const heroRef = useRef(null);
   useEffect(() => {
@@ -270,7 +172,7 @@ function Hero() {
 
         <div className="hero-anim flex flex-col sm:flex-row gap-4 mt-10">
           <a
-            href={waLink("Hola, me gustaría consultar sobre sus servicios.")}
+            href={waLink("Hola! Vi la web de Carmi Ads y quiero el diagnóstico gratis.")}
             target="_blank"
             rel="noopener"
             className="inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1ebe5a] text-white font-body font-semibold px-8 py-4 rounded-full transition-all active:scale-95 text-base shadow-lg shadow-[#25D36633]"
@@ -362,7 +264,12 @@ function Servicios() {
           </div>
         </div>
         <div className="mt-12 text-center">
-          <a href="#contacto" className="inline-flex items-center gap-2 bg-brand-orange hover:bg-orange-600 text-white font-body font-semibold px-8 py-3.5 rounded-full transition-all active:scale-95">
+          <a
+            href={waLink("Hola! Vi la sección de servicios de Carmi Ads y quiero saber qué necesita mi negocio.")}
+            target="_blank"
+            rel="noopener"
+            className="inline-flex items-center gap-2 bg-brand-orange hover:bg-orange-600 text-white font-body font-semibold px-8 py-3.5 rounded-full transition-all active:scale-95"
+          >
             Consultá gratis qué necesitás
             <ArrowIcon className="w-4 h-4" />
           </a>
@@ -486,42 +393,6 @@ function ComoTrabajamos() {
   );
 }
 
-function Testimonios() {
-  const withResults = CLIENTS.filter((c) => c.result);
-  return (
-    <section id="testimonios" className="py-24 lg:py-36 px-6 lg:px-16 bg-brand-dark">
-      <div className="max-w-[1400px] mx-auto">
-        <div className="text-center mb-14 reveal">
-          <span className="font-body font-semibold text-brand-blue text-sm uppercase tracking-widest">Resultados</span>
-          <h2 className="font-heading font-extrabold text-4xl lg:text-6xl text-white mt-3 mb-4">
-            Negocios de Olavarría
-            <br />
-            que ya crecen con Carmi Ads
-          </h2>
-        </div>
-        <div className="grid md:grid-cols-3 gap-6">
-          {withResults.map((c) => (
-            <div key={c.name} className="testimonial-card reveal bg-brand-panel rounded-2xl p-7 border border-white/10 flex flex-col gap-5">
-              <span className="font-body text-xs font-semibold text-brand-blue bg-brand-blue/10 px-3 py-1 rounded-full self-start">{c.services.join(" · ")}</span>
-              <p className="font-body text-white text-base leading-relaxed flex-1">{c.description}</p>
-              <div className="flex items-center justify-between pt-2 border-t border-white/10">
-                <div>
-                  <div className="font-heading font-bold text-white text-sm">{c.name}</div>
-                  <div className="font-body text-brand-muted text-xs mt-0.5">{c.category} · Olavarría</div>
-                </div>
-                <a href={c.igUrl} target="_blank" rel="noopener" className="flex items-center gap-1.5 text-brand-muted hover:text-brand-blue text-xs font-body font-medium transition-colors">
-                  <InstagramIcon className="w-3.5 h-3.5" />
-                  {c.igHandle}
-                </a>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function Nosotros() {
   return (
     <section id="nosotros" className="py-24 lg:py-36 px-6 lg:px-16 bg-brand-base-alt">
@@ -529,7 +400,7 @@ function Nosotros() {
         <div className="flex flex-col items-center md:items-start gap-6">
           <div className="relative w-full max-w-md">
             <div className="rounded-3xl overflow-hidden border border-white/10 shadow-2xl aspect-[3/4]">
-              <img src="assets/guido-desk.png" alt="Guido Carminatti, fundador de Carmi Ads" className="w-full h-full object-cover" />
+              <img src="assets/guido-desk.jpg" alt="Guido Carminatti, fundador de Carmi Ads" className="w-full h-full object-cover" />
             </div>
             <div className="absolute -bottom-5 -right-5 bg-brand-blue text-white rounded-2xl px-5 py-3 shadow-lg">
               <div className="font-heading font-bold text-base leading-tight">Carmi Ads</div>
@@ -717,7 +588,7 @@ function Footer() {
             <ul className="space-y-3">
               <li className="flex items-start gap-2">
                 <WhatsAppIcon className="w-4 h-4 text-brand-blue mt-0.5 flex-shrink-0" />
-                <a href={`https://wa.me/${WA_NUMBER}`} className="font-body text-slate-400 hover:text-white text-sm transition-colors">+54 9 11 6231-0105</a>
+                <a href={waLink("Hola! Te escribo desde el sitio de Carmi Ads.")} className="font-body text-slate-400 hover:text-white text-sm transition-colors">+54 9 11 6231-0105</a>
               </li>
               <li className="flex items-start gap-2">
                 <span className="font-body text-slate-400 text-sm">hola@carmiads.com.ar</span>
@@ -737,7 +608,7 @@ function Footer() {
 function WhatsAppFloat() {
   return (
     <a
-      href={waLink("Hola, me gustaría consultar sobre sus servicios.")}
+      href={waLink("Hola! Estaba viendo la web de Carmi Ads y quiero consultar.")}
       target="_blank"
       rel="noopener"
       aria-label="Chateá con Carmi Ads por WhatsApp"
@@ -756,9 +627,8 @@ function App() {
       <Hero />
       <Marquee />
       <Servicios />
-      <Clientes />
       <ComoTrabajamos />
-      <Testimonios />
+      <Clientes />
       <Nosotros />
       <Contacto />
       <WhatsAppFloat />

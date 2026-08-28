@@ -69,6 +69,7 @@ function Nav() {
   const links = [
     ["#servicios", "Servicios"],
     ["#clientes", "Clientes"],
+    ["#inversion", "Inversión"],
     ["#nosotros", "Nosotros"],
     ["#contacto", "Contacto"],
   ];
@@ -393,6 +394,33 @@ function ComoTrabajamos() {
   );
 }
 
+function Oferta() {
+  return (
+    <section id="inversion" className="py-24 lg:py-36 px-6 lg:px-16 bg-brand-base-alt">
+      <div className="max-w-[1000px] mx-auto text-center">
+        <span className="font-body font-semibold text-brand-blue text-sm uppercase tracking-widest">Inversión</span>
+        <h2 className="font-heading font-extrabold text-4xl lg:text-6xl text-white mt-3 mb-6 reveal">
+          Planes desde
+          <br />
+          <span className="text-brand-blue">$200.000 ARS/mes</span>
+        </h2>
+        <p className="font-body text-brand-muted text-lg max-w-xl mx-auto reveal">
+          El número final depende de tu negocio y de qué necesitás — por eso el primer paso siempre es el diagnóstico gratis, donde te decimos exactamente qué plan te conviene antes de que decidas nada.
+        </p>
+        <a
+          href={waLink("Hola! Vi que los planes arrancan desde $200.000/mes y quiero el diagnóstico gratis para saber qué necesita mi negocio.")}
+          target="_blank"
+          rel="noopener"
+          className="reveal inline-flex items-center gap-2 mt-10 bg-brand-blue hover:bg-brand-blue-dark text-white font-body font-semibold px-8 py-4 rounded-full transition-all active:scale-95"
+        >
+          Quiero mi diagnóstico gratis
+          <ArrowIcon className="w-4 h-4" />
+        </a>
+      </div>
+    </section>
+  );
+}
+
 function Nosotros() {
   return (
     <section id="nosotros" className="py-24 lg:py-36 px-6 lg:px-16 bg-brand-base-alt">
@@ -572,6 +600,7 @@ function Footer() {
               {[
                 ["#servicios", "Servicios"],
                 ["#clientes", "Clientes"],
+                ["#inversion", "Inversión"],
                 ["#nosotros", "Nosotros"],
                 ["#contacto", "Contacto"],
               ].map(([href, label]) => (
@@ -629,6 +658,7 @@ function App() {
       <Servicios />
       <ComoTrabajamos />
       <Clientes />
+      <Oferta />
       <Nosotros />
       <Contacto />
       <WhatsAppFloat />

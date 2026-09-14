@@ -137,7 +137,7 @@ function Hero() {
     return () => ctx.revert();
   }, []);
 
-  const words = ["TU NEGOCIO", "NO TIENE", "SEÑAL."];
+  const words = ["TU NEGOCIO", "MERECE", "SU PUNTO."];
 
   return (
     <section ref={heroRef} className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden px-6">
@@ -168,7 +168,7 @@ function Hero() {
         </h1>
 
         <p className="hero-anim font-body text-white/75 leading-relaxed mt-10 max-w-xl" style={{ fontSize: "clamp(1.05rem, 1.3vw, 1.35rem)" }}>
-          <span className="text-white font-semibold">Nosotros se la damos.</span> Ads, diseño web, redes y branding — todo lo que tu negocio necesita para tener presencia digital real. Sin jerga de agencia, sin reportes eternos, resultados que se ven en tu WhatsApp.
+          <span className="text-white font-semibold">Nosotros se lo damos.</span> Ads, diseño web, redes y branding — todo lo que tu negocio necesita para tener presencia digital real. Sin jerga de agencia, sin reportes eternos, resultados que se ven en tu WhatsApp.
         </p>
 
         <div className="hero-anim flex flex-col sm:flex-row gap-4 mt-10">

@@ -640,6 +640,10 @@ function Footer() {
               <li className="flex items-start gap-2">
                 <span className="font-body text-slate-400 text-sm">hola@puntodigital-olavarria.com.ar</span>
               </li>
+              <li className="flex items-start gap-2">
+                <InstagramIcon className="w-4 h-4 text-brand-blue mt-0.5 flex-shrink-0" />
+                <a href="https://www.instagram.com/holadigital" target="_blank" rel="noopener" className="font-body text-slate-400 hover:text-white text-sm transition-colors">@holadigital</a>
+              </li>
             </ul>
           </div>
         </div>

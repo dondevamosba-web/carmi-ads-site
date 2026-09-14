@@ -1,4 +1,4 @@
-// Datos reales de los clientes actuales de Carmi Ads.
+// Datos reales de los clientes actuales de Punto Digital.
 // logoUrl: null hasta que Guido apruebe una imagen puntual para cada cliente —
 // mientras tanto se muestra el monograma de respaldo (client-logo-fallback).
 const CLIENTS = [

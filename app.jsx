@@ -77,7 +77,7 @@ function Nav() {
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-4 px-6 lg:px-16 ${scrolled ? "nav-scrolled" : ""}`}>
       <div className="max-w-[1400px] mx-auto flex items-center justify-between">
         <a href="#" className="flex-shrink-0">
-          <img src="assets/logo-white.svg" alt="Carmi Ads" className="h-9 w-auto" />
+          <img src="assets/logo-white.svg" alt="Punto Digital" className="h-9 w-auto" />
         </a>
         <div className="hidden md:flex items-center gap-8">
           {links.map(([href, label]) => (
@@ -151,7 +151,7 @@ function Hero() {
       <div className="relative z-10 flex flex-col items-center text-center pt-24">
         <div className="hero-anim inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white font-body font-semibold text-sm px-4 py-1.5 rounded-full mb-10 border border-white/15">
           <span className="w-2 h-2 bg-brand-orange rounded-full animate-pulse"></span>
-          Ads + Diseño Web en Olavarría
+          Marketing Digital Integral en Olavarría
         </div>
 
         <h1
@@ -168,12 +168,12 @@ function Hero() {
         </h1>
 
         <p className="hero-anim font-body text-white/75 leading-relaxed mt-10 max-w-xl" style={{ fontSize: "clamp(1.05rem, 1.3vw, 1.35rem)" }}>
-          <span className="text-white font-semibold">Nosotros se la damos.</span> Campañas de Google y Meta Ads que traen clientes, y sitios web que los convierten. Sin jerga de agencia, sin reportes eternos — resultados que se ven en tu WhatsApp.
+          <span className="text-white font-semibold">Nosotros se la damos.</span> Ads, diseño web, redes y branding — todo lo que tu negocio necesita para tener presencia digital real. Sin jerga de agencia, sin reportes eternos, resultados que se ven en tu WhatsApp.
         </p>
 
         <div className="hero-anim flex flex-col sm:flex-row gap-4 mt-10">
           <a
-            href={waLink("Hola! Vi la web de Carmi Ads y quiero el diagnóstico gratis.")}
+            href={waLink("Hola! Vi la web de Punto Digital y quiero el diagnóstico gratis.")}
             target="_blank"
             rel="noopener"
             className="inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1ebe5a] text-white font-body font-semibold px-8 py-4 rounded-full transition-all active:scale-95 text-base shadow-lg shadow-[#25D36633]"
@@ -235,12 +235,12 @@ function Servicios() {
         <div className="text-center mb-14 reveal">
           <span className="font-body font-semibold text-brand-blue text-sm uppercase tracking-widest">Lo que hacemos</span>
           <h2 className="font-heading font-extrabold text-4xl lg:text-6xl text-white mt-3 mb-4">
-            Dos cosas.
+            Marketing digital,
             <br />
-            Bien hechas.
+            de punta a punta.
           </h2>
           <p className="font-body text-brand-muted text-lg max-w-2xl mx-auto">
-            Nada de paquetes de diez servicios que no necesitás. Ads que traen gente y un sitio que los convierte — eso alcanza para crecer online.
+            Nada de paquetes de diez servicios que no necesitás. Ads que traen gente, un sitio que los convierte, redes que sostienen la relación y una marca prolija en todos lados — eso es crecer online, en serio.
           </p>
         </div>
         <div className="grid sm:grid-cols-2 gap-8 max-w-5xl mx-auto">
@@ -263,10 +263,28 @@ function Servicios() {
             <h3 className="font-heading font-bold text-2xl text-white mb-3">Diseño Web</h3>
             <p className="font-body text-brand-muted text-base leading-relaxed">Sitios rápidos y mobile-first, hechos para vender. Tu sitio es el primer vendedor que ve un cliente — que no lo espante.</p>
           </div>
+          <div className="service-card reveal bg-brand-panel rounded-3xl p-10 border border-white/10">
+            <div className="w-16 h-16 bg-brand-blue/10 rounded-2xl flex items-center justify-center mb-7">
+              <svg className="w-8 h-8 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
+              </svg>
+            </div>
+            <h3 className="font-heading font-bold text-2xl text-white mb-3">Redes Sociales</h3>
+            <p className="font-body text-brand-muted text-base leading-relaxed">Contenido y gestión de Instagram y Facebook que sostiene la conversación con tu comunidad entre campaña y campaña.</p>
+          </div>
+          <div className="service-card reveal bg-brand-panel rounded-3xl p-10 border border-white/10">
+            <div className="w-16 h-16 bg-brand-blue/10 rounded-2xl flex items-center justify-center mb-7">
+              <svg className="w-8 h-8 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-6.714 2.143L12 21l-2.286-6.857L3 12l6.714-2.143L12 3z" />
+              </svg>
+            </div>
+            <h3 className="font-heading font-bold text-2xl text-white mb-3">Identidad & Branding</h3>
+            <p className="font-body text-brand-muted text-base leading-relaxed">Logo, paleta y lineamientos claros para que tu marca se vea igual de prolija en el local, en el sitio y en las redes.</p>
+          </div>
         </div>
         <div className="mt-12 text-center">
           <a
-            href={waLink("Hola! Vi la sección de servicios de Carmi Ads y quiero saber qué necesita mi negocio.")}
+            href={waLink("Hola! Vi la sección de servicios de Punto Digital y quiero saber qué necesita mi negocio.")}
             target="_blank"
             rel="noopener"
             className="inline-flex items-center gap-2 bg-brand-orange hover:bg-orange-600 text-white font-body font-semibold px-8 py-3.5 rounded-full transition-all active:scale-95"
@@ -428,16 +446,16 @@ function Nosotros() {
         <div className="flex flex-col items-center md:items-start gap-6">
           <div className="relative w-full max-w-md">
             <div className="rounded-3xl overflow-hidden border border-white/10 shadow-2xl aspect-[3/4]">
-              <img src="assets/guido-desk.jpg" alt="Guido Carminatti, fundador de Carmi Ads" className="w-full h-full object-cover" />
+              <img src="assets/guido-desk.jpg" alt="Guido Carminatti, fundador de Punto Digital" className="w-full h-full object-cover" />
             </div>
             <div className="absolute -bottom-5 -right-5 bg-brand-blue text-white rounded-2xl px-5 py-3 shadow-lg">
-              <div className="font-heading font-bold text-base leading-tight">Carmi Ads</div>
-              <div className="font-body text-blue-100 text-xs">Olavarría, BA</div>
+              <div className="font-heading font-bold text-base leading-tight">Punto Digital</div>
+              <div className="font-body text-blue-100 text-xs">Olavarría, Argentina</div>
             </div>
           </div>
           <div className="text-center md:text-left mt-2">
             <div className="font-heading font-bold text-2xl text-white">Guido Carminatti</div>
-            <div className="font-body text-brand-muted text-base">Fundador & Director, Carmi Ads</div>
+            <div className="font-body text-brand-muted text-base">Fundador & Director, Punto Digital</div>
           </div>
         </div>
         <div>
@@ -450,10 +468,10 @@ function Nosotros() {
             de acá.
           </h2>
           <p className="font-body text-brand-muted text-base leading-relaxed mb-8">
-            Soy Guido, fundador de Carmi Ads. Nací y crecí en Olavarría, y vi de primera mano cómo los negocios locales perdían clientes frente a competidores que simplemente tenían mejor presencia digital.
+            Soy Guido, fundador de Punto Digital. Nací y crecí en Olavarría, y vi de primera mano cómo los negocios locales perdían clientes frente a competidores que simplemente tenían mejor presencia digital.
             <br />
             <br />
-            Creé Carmi Ads para resolver ese problema: traer marketing digital de calidad directamente a los negocios de la ciudad, sin precios de agencia porteña ni resultados genéricos. Cada cliente es un vecino — eso cambia cómo trabajamos.
+            Creé Punto Digital para resolver ese problema, y para ir más allá de una sola pata: traer marketing digital integral —ads, web, redes y marca— directamente a los negocios de Olavarría y de toda Argentina, sin precios de agencia porteña ni resultados genéricos. Cada cliente es un vecino — eso cambia cómo trabajamos.
           </p>
           <div className="space-y-5">
             {[
@@ -488,7 +506,7 @@ function Contacto() {
     e.preventDefault();
     setStatus("sending");
     try {
-      // FormSubmit (mismo servicio que ya usa storm-site) — sin backend propio, funciona en GitHub Pages.
+      // FormSubmit (mismo servicio que ya usa el resto de los sitios) — sin backend propio, funciona en GitHub Pages.
       await fetch("https://formsubmit.co/ajax/carminattiguido@gmail.com", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
@@ -520,7 +538,7 @@ function Contacto() {
             </div>
             <div className="bg-brand-panel rounded-2xl p-6 border border-white/10">
               <h3 className="font-heading font-bold text-lg text-white mb-4">Otras formas de contacto</h3>
-              <a href="mailto:hola@carmiads.com.ar" className="flex items-center gap-4 p-4 rounded-xl bg-brand-blue/10 border border-brand-blue/20 hover:bg-brand-blue/15 transition-colors">
+              <a href="mailto:hola@puntodigital-olavarria.com.ar" className="flex items-center gap-4 p-4 rounded-xl bg-brand-blue/10 border border-brand-blue/20 hover:bg-brand-blue/15 transition-colors">
                 <div className="w-10 h-10 rounded-full bg-brand-blue/20 flex items-center justify-center flex-shrink-0">
                   <svg className="w-5 h-5 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -528,7 +546,7 @@ function Contacto() {
                 </div>
                 <div>
                   <div className="font-body font-semibold text-white text-sm">Email</div>
-                  <div className="font-body text-brand-muted text-sm">hola@carmiads.com.ar</div>
+                  <div className="font-body text-brand-muted text-sm">hola@puntodigital-olavarria.com.ar</div>
                 </div>
               </a>
             </div>
@@ -546,8 +564,8 @@ function Contacto() {
                 <p className="font-body text-brand-muted text-sm">Te contactamos en las próximas horas.</p>
               </div>
             ) : (
-              <form ref={formRef} name="carmi-ads-leads" onSubmit={handleSubmit} className="bg-brand-panel rounded-2xl p-8 border border-white/10 space-y-5">
-                <input type="hidden" name="_subject" value="Nuevo lead — Carmi Ads" />
+              <form ref={formRef} name="punto-digital-leads" onSubmit={handleSubmit} className="bg-brand-panel rounded-2xl p-8 border border-white/10 space-y-5">
+                <input type="hidden" name="_subject" value="Nuevo lead — Punto Digital" />
                 <input type="hidden" name="_captcha" value="false" />
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div>
@@ -586,10 +604,10 @@ function Footer() {
       <div className="max-w-[1400px] mx-auto">
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10 mb-12">
           <div>
-            <img src="assets/logo-white.svg" alt="Carmi Ads" className="h-10 w-auto mb-3" />
+            <img src="assets/logo-white.svg" alt="Punto Digital" className="h-10 w-auto mb-3" />
             <div className="w-8 h-0.5 bg-brand-blue mb-4 rounded"></div>
             <p className="font-body text-slate-400 text-sm leading-relaxed">
-              Hacemos crecer negocios en Olavarría.
+              Hacemos crecer negocios en Olavarría y en toda Argentina.
               <br />
               Olavarría, Buenos Aires, Argentina.
             </p>
@@ -617,16 +635,16 @@ function Footer() {
             <ul className="space-y-3">
               <li className="flex items-start gap-2">
                 <WhatsAppIcon className="w-4 h-4 text-brand-blue mt-0.5 flex-shrink-0" />
-                <a href={waLink("Hola! Te escribo desde el sitio de Carmi Ads.")} className="font-body text-slate-400 hover:text-white text-sm transition-colors">+54 9 11 6231-0105</a>
+                <a href={waLink("Hola! Te escribo desde el sitio de Punto Digital.")} className="font-body text-slate-400 hover:text-white text-sm transition-colors">+54 9 11 6231-0105</a>
               </li>
               <li className="flex items-start gap-2">
-                <span className="font-body text-slate-400 text-sm">hola@carmiads.com.ar</span>
+                <span className="font-body text-slate-400 text-sm">hola@puntodigital-olavarria.com.ar</span>
               </li>
             </ul>
           </div>
         </div>
         <div className="border-t border-white/10 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="font-body text-slate-500 text-sm">© 2026 Carmi Ads — Olavarría, Buenos Aires, Argentina.</p>
+          <p className="font-body text-slate-500 text-sm">© 2026 Punto Digital — Olavarría, Buenos Aires, Argentina.</p>
           <p className="font-body text-slate-600 text-xs">Hecho con ❤️ en Olavarría</p>
         </div>
       </div>
@@ -637,10 +655,10 @@ function Footer() {
 function WhatsAppFloat() {
   return (
     <a
-      href={waLink("Hola! Estaba viendo la web de Carmi Ads y quiero consultar.")}
+      href={waLink("Hola! Estaba viendo la web de Punto Digital y quiero consultar.")}
       target="_blank"
       rel="noopener"
-      aria-label="Chateá con Carmi Ads por WhatsApp"
+      aria-label="Chateá con Punto Digital por WhatsApp"
       className="whatsapp-pulse fixed bottom-6 right-6 z-50 w-14 h-14 bg-[#25D366] hover:bg-[#1ebe5a] rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 active:scale-95"
     >
       <WhatsAppIcon className="w-7 h-7 text-white" />
